@@ -5,7 +5,6 @@ import os
 import time
 import random
 import itertools
-from datetime import date
 import asyncio
 
 client = commands.Bot(command_prefix = ':)')
@@ -13,39 +12,46 @@ naughtycount = 0
 normal = ["https://www.youtube.com/watch?v=W_FRPoJIrlI","https://www.youtube.com/watch?v=0nf_0Thk_4Q","https://www.youtube.com/watch?v=MBmb5_TTT-w"]
 reverb = ["https://www.youtube.com/watch?v=HwYwBq1ZCEQ","https://www.youtube.com/watch?v=hr7GyFM7pX4","https://www.youtube.com/watch?v=Q_9VMaX61nI"]
 bassboost = ["https://www.youtube.com/watch?v=N6_NcCcNhA4","https://www.youtube.com/watch?v=LVZ9YycnNSg","https://www.youtube.com/watch?v=t_PzQ--8Cyc"]
+isAwake = False
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
     print('Use :)terminate to terminate the program')
     
-    while True:
+    while isAwake:
         await asyncio.sleep(random.randint(100,1000))
-        adlibs = os.listdir("/Users/Radhesh Salgadoe/Documents/Discord Bots/BMO/adlibs")
+
+        # Enter the path for your BMO adlibs
+        adlibs = os.listdir("")
         adlib = adlibs[random.randint(0,(len(adlibs)-1))]
         path = "adlibs/" + adlib
         print(f"PATH: {path}")
         print(f"all adlibs:{adlibs}// chosen adlib:{adlib}")
+
+        # Enter your guild id and name of the voice channel you want bmo to reside in
         guild = client.get_guild(747160612416520413)
         voiceChannel = discord.utils.get(guild.voice_channels, name="Finn & Jake's Treehouse")
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=guild)
         voice.play(discord.FFmpegPCMAudio(path))
             
-        while voice.is_playing(): #Checks if voice is playing
-            await asyncio.sleep(1) #While it's playing it sleeps for 1 second
+        while voice.is_playing(): # Checks if voice is playing
+            await asyncio.sleep(1) # While it's playing it sleeps for 1 second
         else:
-            await asyncio.sleep(2.5) #If it's not playing it waits 15 seconds
-            while voice.is_playing(): #and checks once again if the bot is not playing
-                break #if it's playing it breaks
+            await asyncio.sleep(2.5) # If it's not playing it waits 15 seconds
+            while voice.is_playing(): # and checks once again if the bot is not playing
+                break # if it's playing it breaks
             else:
-                await voice.disconnect() #if not it disconnects
+                await voice.disconnect() # if not it disconnects
 
 
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         print("Fart has occured")
+
+        # Concatenating all 3 lists into superlist and randomly assigning one item as the url
         url = normal + reverb + bassboost
         url = url[random.randint(0,8)]
         song_there = os.path.isfile("song.mp3")
@@ -54,11 +60,14 @@ async def on_command_error(ctx, error):
                 os.remove("song.mp3")
         except PermissionError:
             await ctx.send("Wait for the current fart to stop.")
-            return            
-        voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="Finn & Jake's Treehouse")
+            return
+
+        # Enter the name of the voice channel you want bmo to reside in             
+        voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="")
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
+        # Initialising the youtube downloader
         ydl_opts = {
             'format': 'bestaudio/best',
             'postprocessors': [{
@@ -89,6 +98,8 @@ async def fart(ctx, effect : str):
     print("Fart has occured")
     error = False
     song_there = os.path.isfile("song.mp3")
+
+    # File presence check
     try:
         if song_there:
             os.remove("song.mp3")
@@ -96,6 +107,7 @@ async def fart(ctx, effect : str):
         await ctx.send("Wait for the current fart to stop.")
         return
 
+    # 'Fart type' selection
     if effect == "normal":
         url = normal[random.randint(0,2)]
     elif effect == "reverb":
@@ -105,12 +117,15 @@ async def fart(ctx, effect : str):
     else:
         error = True
         
-
+    
     if error != True:
+
+        # Enter the name of the voice channel you want bmo to reside in 
         voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="Finn & Jake's Treehouse")
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
+        # Initializing the youtube downloader
         ydl_opts = {
             'format': 'bestaudio/best',
             'postprocessors': [{
@@ -126,14 +141,16 @@ async def fart(ctx, effect : str):
                 os.rename(file, "song.mp3")
         voice.play(discord.FFmpegPCMAudio("song.mp3"))
         
-        while voice.is_playing(): #Checks if voice is playing
-            await asyncio.sleep(1) #While it's playing it sleeps for 1 second
+        while voice.is_playing(): # Checks if voice is playing
+            await asyncio.sleep(1) # While it's playing it sleeps for 1 second
         else:
-            await asyncio.sleep(2.5) #If it's not playing it waits 15 seconds
-            while voice.is_playing(): #and checks once again if the bot is not playing
-                break #if it's playing it breaks
+            await asyncio.sleep(2.5) # If it's not playing it waits 15 seconds
+            while voice.is_playing(): # and checks once again if the bot is not playing
+                break # if it's playing it breaks
             else:
                 await voice.disconnect() #if not it disconnects
+    
+    # Else block executes if command is typed with an invalid effect string, i.e ' :)fart gfdad '
     else:
         await ctx.send("You must enter a valid effect, eg: :)fart normal")
 
@@ -144,6 +161,8 @@ async def info(ctx):
 
 @client.command()
 async def terminate(ctx):
+
+    # For the developer's convenience
     await client.logout()
 
 @client.event   
@@ -184,6 +203,7 @@ async def on_message(message):
                     await message.channel.send("Wait for the current fart to stop.")
                     return
 
+                # Enter the name of the voice channel you want bmo to reside in 
                 voiceChannel = discord.utils.get(message.guild.voice_channels, name="Finn & Jake's Treehouse")
                 await voiceChannel.connect()
                 voice = discord.utils.get(client.voice_clients, guild=message.guild)
@@ -203,14 +223,14 @@ async def on_message(message):
                         os.rename(file, "song.mp3")
                 voice.play(discord.FFmpegPCMAudio("song.mp3"))
                 
-                while voice.is_playing(): #Checks if voice is playing
-                    await asyncio.sleep(1) #While it's playing it sleeps for 1 second
+                while voice.is_playing(): # Checks if voice is playing
+                    await asyncio.sleep(1) # While it's playing it sleeps for 1 second
                 else:
-                    await asyncio.sleep(2.5) #If it's not playing it waits 15 seconds
-                    while voice.is_playing(): #and checks once again if the bot is not playing
-                        break #if it's playing it breaks
+                    await asyncio.sleep(2.5) # If it's not playing it waits 15 seconds
+                    while voice.is_playing(): # and checks once again if the bot is not playing
+                        break # if it's playing it breaks
                     else:
-                        await voice.disconnect() #if not it disconnects
+                        await voice.disconnect() # if not it disconnects
 
 
-client.run('NzQ3MTYwNDQ5MDk4NzExMDgy.X0K1ZA.4SgQSAchBNe8M1NP9U23URdt4Vc')
+client.run('No token for you')
