@@ -213,4 +213,4 @@ async def on_message(message):
                         await voice.disconnect() #if not it disconnects
 
 
-client.run('NzQ3MTYwNDQ5MDk4NzExMDgy.X0K1ZA.4SgQSAchBNe8M1NP9U23URdt4Vc')
+client.run('<null>')
