@@ -18,32 +18,12 @@ bassboost = ["https://www.youtube.com/watch?v=N6_NcCcNhA4","https://www.youtube.
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
     print('Use :)terminate to terminate the program')
-    
-    while True:
-        await asyncio.sleep(random.randint(100,1000))
-        adlibs = os.listdir("/Users/Radhesh Salgadoe/Documents/Discord Bots/BMO/adlibs")
-        adlib = adlibs[random.randint(0,(len(adlibs)-1))]
-        path = "adlibs/" + adlib
-        print(f"PATH: {path}")
-        print(f"all adlibs:{adlibs}// chosen adlib:{adlib}")
-        guild = client.get_guild(747160612416520413)
-        voiceChannel = discord.utils.get(guild.voice_channels, name="Finn & Jake's Treehouse")
-        await voiceChannel.connect()
-        voice = discord.utils.get(client.voice_clients, guild=guild)
-        voice.play(discord.FFmpegPCMAudio(path))
-            
-        while voice.is_playing(): #Checks if voice is playing
-            await asyncio.sleep(1) #While it's playing it sleeps for 1 second
-        else:
-            await asyncio.sleep(2.5) #If it's not playing it waits 15 seconds
-            while voice.is_playing(): #and checks once again if the bot is not playing
-                break #if it's playing it breaks
-            else:
-                await voice.disconnect() #if not it disconnects
 
 
 @client.event
 async def on_command_error(ctx, error):
+    user = ctx.message.author
+    vc = user.voice.channel
     if isinstance(error, commands.MissingRequiredArgument):
         print("Fart has occured")
         url = normal + reverb + bassboost
@@ -55,7 +35,7 @@ async def on_command_error(ctx, error):
         except PermissionError:
             await ctx.send("Wait for the current fart to stop.")
             return            
-        voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="Finn & Jake's Treehouse")
+        voiceChannel = vc
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
@@ -87,6 +67,8 @@ async def on_command_error(ctx, error):
 @client.command()
 async def fart(ctx, effect : str):
     print("Fart has occured")
+    user = ctx.message.author
+    vc = user.voice.channel
     error = False
     song_there = os.path.isfile("song.mp3")
     try:
@@ -107,7 +89,7 @@ async def fart(ctx, effect : str):
         
 
     if error != True:
-        voiceChannel = discord.utils.get(ctx.guild.voice_channels, name="Finn & Jake's Treehouse")
+        voiceChannel = vc
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
@@ -141,7 +123,30 @@ async def fart(ctx, effect : str):
 @client.command()
 async def info(ctx):
     await ctx.send("Hello! I am BMO Bot version 1.0.0. You can say hi to me if you feel lonely. My command prefix us ' :) '. Here are just a few things that I can do as of currently in my development:':)fart [effect]' to make BMO fart. Choose an effect of either normal, reverb or bassboost.")
-
+    user = ctx.message.author
+    vc = user.voice.channel
+    while True:
+        await asyncio.sleep(random.randint(100,1000))
+        adlibs = os.listdir("<insert directory>")
+        adlib = adlibs[random.randint(0,(len(adlibs)-1))]
+        path = "adlibs/" + adlib
+        print(f"PATH: {path}")
+        print(f"all adlibs:{adlibs}// chosen adlib:{adlib}")
+        guild = client.get_guild(747160612416520413)
+        voiceChannel = vc
+        await voiceChannel.connect()
+        voice = discord.utils.get(client.voice_clients, guild=guild)
+        voice.play(discord.FFmpegPCMAudio(path))
+            
+        while voice.is_playing(): #Checks if voice is playing
+            await asyncio.sleep(1) #While it's playing it sleeps for 1 second
+        else:
+            await asyncio.sleep(2.5) #If it's not playing it waits 15 seconds
+            while voice.is_playing(): #and checks once again if the bot is not playing
+                break #if it's playing it breaks
+            else:
+                await voice.disconnect() #if not it disconnects
+    
 @client.command()
 async def terminate(ctx):
     await client.logout()
@@ -202,6 +207,7 @@ async def on_message(message):
                     if file.endswith(".mp3"):
                         os.rename(file, "song.mp3")
                 voice.play(discord.FFmpegPCMAudio("song.mp3"))
+                naughtycount = 0
                 
                 while voice.is_playing(): #Checks if voice is playing
                     await asyncio.sleep(1) #While it's playing it sleeps for 1 second
